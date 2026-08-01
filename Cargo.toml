@@ -249,6 +249,7 @@ check-cfg = [
     'cfg(asm_experimental_arch)',
     'cfg(bsd)',
     'cfg(core_c_str)',
+    'cfg(core_error)',
     'cfg(core_ffi_c)',
     'cfg(core_intrinsics)',
     'cfg(criterion)',

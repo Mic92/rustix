@@ -77,6 +77,11 @@ fn main() {
         use_feature_or_nothing("alloc_c_string");
         use_feature_or_nothing("alloc_ffi");
         use_feature_or_nothing("error_in_core");
+
+        // `core::error::Error`, stable since Rust 1.81.
+        if can_compile("#![no_std] use core::error::Error as _;") {
+            use_feature("core_error");
+        }
     }
 
     // `LowerExp`/`UpperExp` for `NonZeroI32` etc.
