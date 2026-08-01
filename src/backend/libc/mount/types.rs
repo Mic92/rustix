@@ -346,3 +346,44 @@ bitflags! {
 
 #[cfg(linux_kernel)]
 pub(crate) struct MountFlagsArg(pub(crate) c::c_ulong);
+
+
+bitflags! {
+    /// `AT_*` flags for use with [`mount_setattr`].
+    ///
+    /// [`mount_setattr`]: crate::mount::mount_setattr
+    #[repr(transparent)]
+    #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
+    pub struct MountSetattrFlags: ffi::c_uint {
+        /// `AT_EMPTY_PATH`: Change the mount referred to by `dirfd` itself.
+        const AT_EMPTY_PATH = 0x1000;
+
+        /// `AT_RECURSIVE`: Change the entire mount tree.
+        const AT_RECURSIVE = 0x8000;
+
+        /// `AT_SYMLINK_NOFOLLOW`: Don't follow symbolic links.
+        const AT_SYMLINK_NOFOLLOW = 0x100;
+
+        /// `AT_NO_AUTOMOUNT`: Don't trigger automounts.
+        const AT_NO_AUTOMOUNT = 0x800;
+
+        /// <https://docs.rs/bitflags/*/bitflags/#externally-defined-flags>
+        const _ = !0;
+    }
+}
+
+/// `struct mount_attr` for use with [`mount_setattr`].
+///
+/// [`mount_setattr`]: crate::mount::mount_setattr
+#[repr(C)]
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug, Default)]
+pub struct MountAttr {
+    /// `MOUNT_ATTR_*` flags to set.
+    pub attr_set: u64,
+    /// `MOUNT_ATTR_*` flags to clear.
+    pub attr_clr: u64,
+    /// `MS_*` propagation type.
+    pub propagation: u64,
+    /// User namespace file descriptor for `MOUNT_ATTR_IDMAP`.
+    pub userns_fd: u64,
+}

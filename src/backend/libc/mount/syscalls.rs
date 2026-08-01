@@ -266,3 +266,30 @@ pub(crate) fn fsconfig_create_excl(fs_fd: BorrowedFd<'_>) -> io::Result<()> {
         ))
     }
 }
+
+#[cfg(linux_kernel)]
+pub(crate) fn mount_setattr(
+    dirfd: BorrowedFd<'_>,
+    path: &CStr,
+    flags: super::types::MountSetattrFlags,
+    attr: &super::types::MountAttr,
+) -> io::Result<()> {
+    syscall! {
+        fn mount_setattr(
+            dir_fd: c::c_int,
+            pathname: *const c::c_char,
+            at_flags: c::c_uint,
+            mount_attr: *const super::types::MountAttr,
+            size: c::size_t
+        ) via SYS_mount_setattr -> c::c_int
+    }
+    unsafe {
+        ret(mount_setattr(
+            borrowed_fd(dirfd),
+            c_str(path),
+            flags.bits(),
+            attr,
+            core::mem::size_of::<super::types::MountAttr>(),
+        ))
+    }
+}

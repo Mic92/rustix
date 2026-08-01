@@ -507,6 +507,13 @@ impl<'a, Num: ArgNumber> From<crate::backend::mount::types::MoveMountFlags> for 
     }
 }
 
+impl<'a, Num: ArgNumber> From<crate::backend::mount::types::MountSetattrFlags> for ArgReg<'a, Num> {
+    #[inline]
+    fn from(flags: crate::backend::mount::types::MountSetattrFlags) -> Self {
+        c_uint(flags.bits())
+    }
+}
+
 impl<'a, Num: ArgNumber> From<crate::io::FdFlags> for ArgReg<'a, Num> {
     #[inline]
     fn from(flags: crate::io::FdFlags) -> Self {

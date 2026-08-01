@@ -1,7 +1,8 @@
 //! `fsopen` and related functions in Linux's `mount` API.
 
 use crate::backend::mount::types::{
-    FsMountFlags, FsOpenFlags, FsPickFlags, MountAttrFlags, MoveMountFlags, OpenTreeFlags,
+    FsMountFlags, FsOpenFlags, FsPickFlags, MountAttr, MountAttrFlags, MountSetattrFlags,
+    MoveMountFlags, OpenTreeFlags,
 };
 use crate::fd::{AsFd, OwnedFd};
 use crate::{backend, io, path};
@@ -243,4 +244,22 @@ pub fn fsconfig_reconfigure<Fd: AsFd>(fs_fd: Fd) -> io::Result<()> {
 #[doc(alias = "fsconfig")]
 pub fn fsconfig_create_exclusive<Fd: AsFd>(fs_fd: Fd) -> io::Result<()> {
     backend::mount::syscalls::fsconfig_create_excl(fs_fd.as_fd())
+}
+
+/// `mount_setattr(dirfd, path, flags, attr, size_of::<MountAttr>())`
+///
+/// # References
+///  - [Linux]
+///
+/// [Linux]: https://man7.org/linux/man-pages/man2/mount_setattr.2.html
+#[inline]
+pub fn mount_setattr<Path: path::Arg, Fd: AsFd>(
+    dirfd: Fd,
+    path: Path,
+    flags: MountSetattrFlags,
+    attr: &MountAttr,
+) -> io::Result<()> {
+    path.into_with_c_str(|path| {
+        backend::mount::syscalls::mount_setattr(dirfd.as_fd(), path, flags, attr)
+    })
 }
